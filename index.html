@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>قاعة النخيل للمناسبات</title>
+<style>
+  :root{--red:#c62828;--red-dark:#8e0000;--red-light:#ffebee;--white:#fff;--gray:#f5f5f5;--text:#222;--border:#e0e0e0;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;-webkit-tap-highlight-color:transparent;}
+  html,body{overflow-x:hidden;}
+  body{background:var(--gray);color:var(--text);min-height:100vh;}
+  header{background:var(--red);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  header h1{font-size:22px;}
+  header .sub{font-size:13px;opacity:.9;}
+  nav{background:var(--red-dark);display:flex;flex-wrap:wrap;gap:2px;padding:0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  nav button{background:none;border:none;color:#fff;padding:14px 18px;cursor:pointer;font-size:15px;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;flex-shrink:0;}
+  nav button:hover{background:rgba(255,255,255,.1);}
+  nav button.active{border-bottom-color:#fff;background:rgba(255,255,255,.15);font-weight:bold;}
+  main{padding:24px;max-width:1200px;margin:0 auto;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .card{background:var(--white);border-radius:12px;padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:20px;border-top:5px solid var(--red);}
+  .card h2{color:var(--red);margin-bottom:16px;font-size:20px;}
+  .card h3{color:var(--red-dark);margin:14px 0 8px;font-size:16px;}
+  label{display:block;margin:10px 0 4px;font-weight:600;font-size:14px;}
+  input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:16px;background:#fff;font-family:inherit;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-light);}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:700px){.row{grid-template-columns:1fr;}}
+  button.btn{background:var(--red);color:#fff;border:none;padding:12px 22px;border-radius:8px;cursor:pointer;font-size:15px;font-weight:bold;transition:.2s;margin-top:14px;}
+  button.btn:hover{background:var(--red-dark);}
+  button.btn.outline{background:#fff;color:var(--red);border:2px solid var(--red);}
+  button.btn.outline:hover{background:var(--red-light);}
+  .msg{padding:10px 14px;border-radius:8px;margin-top:12px;font-size:14px;display:none;}
+  .msg.ok{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:block;}
+  .msg.err{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;display:block;}
+  .info-box{background:var(--red-light);border-right:4px solid var(--red);padding:12px 16px;border-radius:6px;margin:12px 0;font-size:14px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;background:#fff;}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:right;}
+  th{background:var(--red);color:#fff;font-weight:600;}
+  tr:nth-child(even) td{background:#fafafa;}
+  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;}
+  .calendar .day{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;font-size:13px;min-height:70px;position:relative;}
+  .calendar .day .num{font-weight:bold;color:var(--red);font-size:15px;}
+  .calendar .day.booked{background:var(--red-light);border-color:var(--red);}
+  .calendar .day .tag{display:block;font-size:10px;color:var(--red-dark);margin-top:3px;}
+  .calendar .head{background:var(--red-dark);color:#fff;font-weight:bold;padding:8px 4px;border-radius:6px;text-align:center;font-size:13px;}
+  .print-area{background:#fff;padding:24px;border:1px solid var(--border);border-radius:8px;}
+  .print-area h2{text-align:center;color:var(--red);margin-bottom:4px;}
+  .print-area .center{text-align:center;font-size:13px;color:#555;margin-bottom:16px;}
+  .contract-row{display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding:8px 0;font-size:14px;}
+  .contract-row span:first-child{color:#555;}
+  .contract-row span:last-child{font-weight:600;}
+  .terms{margin-top:18px;font-size:13px;line-height:1.9;}
+  .terms li{margin-right:18px;}
+  .sign{display:flex;justify-content:space-between;margin-top:30px;font-size:14px;}
+  .sign div{text-align:center;}
+  .hidden{display:none!important;}
+  footer{text-align:center;padding:20px;color:#777;font-size:13px;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#fff;border-radius:12px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;border-top:6px solid var(--red);box-shadow:0 10px 40px rgba(0,0,0,.3);}
+  .modal-head{background:var(--red);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;font-size:17px;}
+  .modal-head button{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;}
+  .modal-body{padding:20px;}
+  .modal-body .contract-row{font-size:14px;padding:7px 0;}
+  .modal-body label{margin-top:8px;}
+  .modal-foot{padding:14px 20px;display:flex;gap:10px;justify-content:flex-start;border-top:1px solid var(--border);flex-wrap:wrap;}
+  #loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
+  #loginScreen .login-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center;}
+  #loginScreen .login-box h2{color:var(--red);margin-bottom:6px;font-size:24px;}
+  #loginScreen .login-box p{color:#666;font-size:14px;margin-bottom:20px;}
+  #loginScreen .login-box input{margin-bottom:10px;text-align:center;}
+  #loginScreen .save-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0;font-size:14px;color:#444;}
+  #loginScreen .save-row input{width:auto;margin:0;}
+  #loginScreen button.btn{width:100%;margin-top:6px;}
+  #loginScreen .msg{text-align:center;}
+  .pass-row{display:flex;gap:6px;align-items:stretch;margin-bottom:10px;}
+  .pass-row input{flex:1;margin-bottom:0;}
+  .toggle-pass{background:#f0f0f0;border:1px solid var(--border);cursor:pointer;padding:0 10px;display:flex;align-items:center;justify-content:center;color:#777;border-radius:8px;transition:.2s;flex-shrink:0;}
+  .toggle-pass:hover{color:var(--red);background:var(--red-light);border-color:var(--red);}
+  .toggle-pass svg{width:20px;height:20px;display:block;}
+  @keyframes shake{0%,100%{transform:translateX(0);}15%{transform:translateX(-8px);}30%{transform:translateX(8px);}45%{transform:translateX(-6px);}60%{transform:translateX(6px);}75%{transform:translateX(-4px);}90%{transform:translateX(4px);}}
+  .shake{animation:shake .45s ease-in-out;}
+  #sendAlert{position:fixed;bottom:20px;left:20px;background:#c62828;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.3);display:none;max-width:320px;}
+  #sendAlert.show{display:block;animation:shake .4s;}
+  .logout-bar{background:#fff;border-top:1px solid var(--border);padding:10px 24px;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#555;}
+  .logout-bar b{color:var(--red);}
+  .logout-bar button{background:var(--red);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;}
+  .logout-bar button:hover{background:var(--red-dark);}
+  @media(max-width:768px){
+    main{padding:14px;}
+    header{padding:14px 16px;}
+    header h1{font-size:18px;}
+    nav{padding:0 6px;}
+    nav button{padding:12px 14px;font-size:14px;}
+    .card{padding:16px;}
+    .card h2{font-size:18px;}
+    #loginScreen .login-box{padding:24px;max-width:100%;}
+    #loginScreen .login-box h2{font-size:20px;}
+    .calendar .day{min-height:60px;padding:8px 4px;font-size:12px;}
+    .calendar .day .num{font-size:13px;}
+    .calendar .head{font-size:11px;padding:6px 2px;}
+    .modal-body{padding:14px;}
+    .logout-bar{padding:10px 14px;font-size:13px;flex-direction:column;gap:8px;}
+  }
+  @media print {
+    body{ background:#fff; }
+    body *{ visibility:hidden; }
+    #printArea, #printArea *{ visibility:visible; }
+    #printArea{position:absolute;top:0;right:0;left:0;margin:0 auto;width:100%;max-width:190mm;border:none;padding:6mm 8mm;font-size:11px;line-height:1.35;color:#000;background:#fff;}
+    .print-area h2{ color:#c62828; font-size:15px; margin-bottom:1px; }
+    .print-area .center{ font-size:10px; color:#333; margin-bottom:6px; }
+    .print-area h3{ font-size:11.5px; margin:6px 0 3px; color:#8e0000; }
+    .contract-row{ border-bottom:1px solid #bbb; padding:3px 0; font-size:10.5px; }
+    .terms{ margin-top:8px; font-size:10px; line-height:1.5; }
+    .terms li{ font-size:10px; margin-right:14px; }
+    .sign{ margin-top:14px; font-size:10.5px; }
+    @page{ size:A4; margin:8mm; }
+  }
+</style>
+</head>
+<body>
+
+<script>
+  const TELEGRAM_BOT_TOKEN = "9134110254:AAGzX7DJ6DuQc84b4zuTV9AMTnc3mwu1eCA";
+  const TELEGRAM_ADMIN_CHAT_ID = "5627350311";
+  const WORKER_URL = "https://nakhil.menuxapp.workers.dev";
+</script>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>🌴 قاعة النخيل للمناسبات</h2>
+    <p>الرجاء إدخال بيانات الدخول</p>
+    <input type="text" id="loginName" placeholder="اسمك الكامل" autocomplete="off">
+    <div class="pass-row">
+      <input type="password" id="loginPass" placeholder="كلمة المرور" autocomplete="off">
+      <button type="button" class="toggle-pass" id="togglePassBtn" title="إظهار/إخفاء كلمة المرور">
+        <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+      </button>
+    </div>
+    <div class="save-row">
+      <input type="checkbox" id="saveLogin">
+      <label for="saveLogin" style="margin:0;">حفظ تسجيل الدخول لهذا الجهاز</label>
+    </div>
+    <button class="btn" id="loginBtn">دخول</button>
+    <div id="loginMsg" class="msg"></div>
+  </div>
+</div>
+
+<div id="sendAlert"></div>
+
+<div id="mainApp" style="display:none;">
+  <header>
+    <div>
+      <h1>🌴 قاعة النخيل للمناسبات</h1>
+      <div class="sub">نظام إدارة الحجوزات الإلكتروني</div>
+    </div>
+  </header>
+
+  <nav>
+    <button class="active" data-page="booking">نموذج حجز جديد</button>
+    <button data-page="preview">إرسال PDF</button>
+    <button data-page="calendar">تقويم الحجوزات</button>
+    <button data-page="list">قائمة الحجوزات</button>
+    <button data-page="settings">الإعدادات</button>
+  </nav>
+
+  <main>
+  <section id="page-booking" class="page active">
+    <div class="card">
+      <h2>نموذج حجز جديد</h2>
+      <div class="row">
+        <div><label>اسم الزبون</label><input id="b_name" placeholder="الاسم الكامل"></div>
+        <div><label>رقم الهاتف</label><input id="b_phone" placeholder="07XXXXXXXXX" inputmode="tel"></div>
+      </div>
+      <div class="row">
+        <div><label>اسم العريس</label><input id="b_groom" placeholder="اسم العريس"></div>
+        <div><label>اسم العروس</label><input id="b_bride" placeholder="اسم العروس"></div>
+      </div>
+      <div class="row">
+        <div><label>عنوان العريس</label><input id="b_groom_addr"></div>
+        <div><label>عنوان العروس</label><input id="b_bride_addr"></div>
+      </div>
+      <div class="row">
+        <div><label>نوع المناسبة</label>
+          <select id="b_type"><option>زفاف</option><option>خطوبة</option><option>عقيقة</option><option>حنة</option><option>مناسبة أخرى</option></select>
+        </div>
+        <div><label>خدمة التصوير</label>
+          <select id="b_photo"><option value="بدون تصوير">بدون تصوير</option><option value="مع تصوير">مع تصوير</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div><label>تاريخ الحفل</label><input type="date" id="b_date"></div>
+        <div><label>الوقت</label><input type="time" id="b_time"></div>
+      </div>
+      <div class="row">
+        <div><label>القاعة</label>
+          <select id="b_hall"><option value="قاعة رقم 1">قاعة رقم 1</option><option value="قاعة رقم 2">قاعة رقم 2</option><option value="القاعتين">القاعتين</option></select>
+        </div>
+        <div><label>المبلغ الكلي (د.ع)</label><input type="number" id="b_total" placeholder="0" inputmode="numeric"></div>
+      </div>
+      <div class="row">
+        <div><label>المبلغ الواصل (د.ع)</label><input type="number" id="b_paid" placeholder="0" inputmode="numeric"></div>
+        <div><label>المتبقي (د.ع)</label><input type="number" id="b_remain" placeholder="0" readonly></div>
+      </div>
+      <label>ملاحظات</label>
+      <textarea id="b_notes" rows="3" placeholder="ملاحظات إضافية..."></textarea>
+      <button class="btn" id="saveBooking">حفظ الحجز</button>
+      <div id="bookingMsg" class="msg"></div>
+    </div>
+  </section>
+
+  <section id="page-preview" class="page">
+    <div class="card">
+      <h2>إرسال PDF</h2>
+      <div class="info-box">اختر الحجز من القائمة، ثم اضغط "إرسال PDF" — راح تفتح نافذة الطباعة، اختر "حفظ كـ PDF".</div>
+      <label>اختر الحجز</label>
+      <select id="pdfSelect"><option value="">— اختر حجزاً —</option></select>
+      <button class="btn" id="sendPdfBtn">إرسال PDF</button>
+    </div>
+    <div class="card" id="contractCard" style="display:none;">
+      <div class="print-area" id="printArea">
+        <h2>قاعة النخيل للمناسبات</h2>
+        <div class="center">عقد حجز قاعة للمناسبات - نسخة الزبون</div>
+        <h3>معلومات الحجز</h3>
+        <div class="contract-row"><span>اسم الزبون</span><span id="c_name">-</span></div>
+        <div class="contract-row"><span>رقم الحجز</span><span id="c_id">-</span></div>
+        <div class="contract-row"><span>تاريخ الحجز</span><span id="c_date">-</span></div>
+        <div class="contract-row"><span>رقم الهاتف</span><span id="c_phone">-</span></div>
+        <div class="contract-row"><span>خدمة التصوير</span><span id="c_photo">-</span></div>
+        <h3>تفاصيل المناسبة</h3>
+        <div class="contract-row"><span>نوع المناسبة</span><span id="c_type">-</span></div>
+        <div class="contract-row"><span>التاريخ</span><span id="c_eventdate">-</span></div>
+        <div class="contract-row"><span>الوقت</span><span id="c_time">-</span></div>
+        <div class="contract-row"><span>القاعة المختارة</span><span id="c_hall">-</span></div>
+        <h3>التفاصيل المالية</h3>
+        <div class="contract-row"><span>المبلغ الكلي</span><span id="c_total">0 د.ع</span></div>
+        <div class="contract-row"><span>المبلغ الواصل</span><span id="c_paid">0 د.ع</span></div>
+        <div class="contract-row"><span>المبلغ المتبقي</span><span id="c_remain">0 د.ع</span></div>
+        <h3>الملاحظات</h3>
+        <div class="contract-row"><span>—</span><span id="c_notes">لا توجد ملاحظات</span></div>
+        <div class="sign"><div>توقيع الزبون<br><br>.......................</div><div>توقيع المسؤول:<br><br>إدارة قاعة النخيل</div></div>
+        <h3>الشروط والأحكام:</h3>
+        <ul class="terms">
+          <li>يتم دفع 50% من قيمة الحجز كعربون عند التوقيع على العقد.</li>
+          <li>لا يحق المطالبة بالعربون في حالة إلغاء الحجز مهما كانت الظروف.</li>
+          <li>يرجى عدم تجمع الرجال أمام القاعة أو عند مدخلها أثناء حجز قاعة النساء حفاظاً على الخصوصية.</li>
+          <li>قاعة النخيل غير مسؤولة عن فقدان الأشياء الشخصية داخل القاعة.</li>
+        </ul>
+        <h3>معلومات هامة</h3>
+        <div class="contract-row"><span>رقم الهاتف</span><span>07705987837 - 07803145115</span></div>
+        <div class="contract-row"><span>العنوان</span><span>البصرة المشراق الجديد مقابل جامعة باب الزبير</span></div>
+        <div class="contract-row"><span>حالة الحجز</span><span>مؤكد</span></div>
+        <div class="center" style="margin-top:16px;">شكراً لاختياركم قاعة النخيل للمناسبات<br>هذه النسخة للزبون - الرجاء الاحتفاظ بها</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-calendar" class="page">
+    <div class="card"><h2>تقويم الحجوزات</h2><div class="calendar" id="calendarGrid"></div></div>
+  </section>
+
+  <section id="page-list" class="page">
+    <div class="card">
+      <h2>قائمة الحجوزات</h2>
+      <div style="overflow-x:auto;">
+        <table id="bookingsTable">
+          <thead><tr><th>رقم الحجز</th><th>اسم الزبون</th><th>العريس</th><th>العروس</th><th>التصوير</th><th>الهاتف</th><th>تاريخ الحفل</th><th>المناسبة</th><th>القاعة</th><th>الكلي</th><th>الإجراءات</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-settings" class="page">
+    <div class="card">
+      <h2>إعدادات الموقع</h2>
+      <label>كلمة المرور الحالية</label><input type="password" id="oldPass">
+      <label>كلمة المرور الجديدة</label><input type="password" id="newPass">
+      <label>تأكيد كلمة المرور الجديدة</label><input type="password" id="confirmPass">
+      <button class="btn" id="changePassBtn">تغيير كلمة المرور</button>
+      <div id="settingsMsg" class="msg"></div>
+    </div>
+  </section>
+  </main>
+
+  <div class="logout-bar">
+    <div>مسجل الدخول باسم: <b id="currentUserName">-</b></div>
+    <button id="logoutBtn">تسجيل الخروج</button>
+  </div>
+
+  <footer>© قاعة النخيل للمناسبات — جميع الحقوق محفوظة</footer>
+</div>
+
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal-box">
+    <div class="modal-head"><span id="modalTitle">تفاصيل الحجز</span><button id="modalClose">&times;</button></div>
+    <div class="modal-body" id="modalView"></div>
+    <div class="modal-body" id="modalEdit" style="display:none;">
+      <div class="row"><div><label>اسم الزبون</label><input id="e_name"></div><div><label>رقم الهاتف</label><input id="e_phone"></div></div>
+      <div class="row"><div><label>اسم العريس</label><input id="e_groom"></div><div><label>اسم العروس</label><input id="e_bride"></div></div>
+      <div class="row"><div><label>عنوان العريس</label><input id="e_groom_addr"></div><div><label>عنوان العروس</label><input id="e_bride_addr"></div></div>
+      <div class="row">
+        <div><label>نوع المناسبة</label><select id="e_type"><option>زفاف</option><option>خطوبة</option><option>عقيقة</option><option>حنة</option><option>مناسبة أخرى</option></select></div>
+        <div><label>خدمة التصوير</label><select id="e_photo"><option value="بدون تصوير">بدون تصوير</option><option value="مع تصوير">مع تصوير</option></select></div>
+      </div>
+      <div class="row"><div><label>تاريخ الحفل</label><input type="date" id="e_date"></div><div><label>الوقت</label><input type="time" id="e_time"></div></div>
+      <div class="row">
+        <div><label>القاعة</label><select id="e_hall"><option value="قاعة رقم 1">قاعة رقم 1</option><option value="قاعة رقم 2">قاعة رقم 2</option><option value="القاعتين">القاعتين</option></select></div>
+        <div><label>المبلغ الكلي</label><input type="number" id="e_total"></div>
+      </div>
+      <div class="row"><div><label>المبلغ الواصل</label><input type="number" id="e_paid"></div><div><label>المتبقي</label><input type="number" id="e_remain" readonly></div></div>
+      <label>ملاحظات</label><textarea id="e_notes" rows="2"></textarea>
+    </div>
+    <div class="modal-foot" id="modalFoot">
+      <button class="btn" id="modalEditBtn" style="display:none;">تعديل</button>
+      <button class="btn outline" id="modalSaveBtn" style="display:none;">حفظ التعديلات</button>
+      <button class="btn outline" id="modalCancelBtn">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCD2WiiCJdVzbFBsqd-4OGXjEVPoj_XVO8",
+  authDomain: "eassen-2c2a1.firebaseapp.com",
+  projectId: "eassen-2c2a1",
+  storageBucket: "eassen-2c2a1.firebasestorage.app",
+  messagingSenderId: "671923450236",
+  appId: "1:671923450236:web:a8f70c911cbbc12f7674f9",
+  measurementId: "G-PMYD70EFQR"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const fmtMoney = n => (Number(n)||0).toLocaleString('en-US') + ' د.ع';
+const showMsg = (el, t, ok) => { el.textContent = t; el.className = 'msg ' + (ok?'ok':'err'); };
+
+function showSendAlert(msg){
+  const el = document.getElementById('sendAlert');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 5000);
+}
+
+/* كشف الجهاز */
+function getDeviceInfo(){
+  const ua = navigator.userAgent;
+  let device = "غير معروف", os = "", browser = "";
+  if(/iPhone/i.test(ua)){ device = "iPhone"; os = "iOS"; }
+  else if(/iPad/i.test(ua)){ device = "iPad"; os = "iOS"; }
+  else if(/Android/i.test(ua)){ device = "Android"; os = "Android"; }
+  else if(/Windows/i.test(ua)){ device = "كمبيوتر"; os = "Windows"; }
+  else if(/Mac/i.test(ua)){ device = "Mac"; os = "macOS"; }
+  else if(/Linux/i.test(ua)){ device = "كمبيوتر"; os = "Linux"; }
+  if(/Edg/i.test(ua)) browser = "Edge";
+  else if(/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
+  else if(/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+  else if(/Firefox/i.test(ua)) browser = "Firefox";
+  return `${device} - ${os} - ${browser}`;
+}
+
+/* الموقع الجغرافي (60 ثانية + رابط خرائط) */
+function getLocation(timeoutMs = 60000){
+  return new Promise(resolve=>{
+    if(!navigator.geolocation){ resolve({ text: "غير متاح", maps: "" }); return; }
+    let done = false;
+    const timer = setTimeout(()=>{
+      if(!done){ done = true; resolve({ text: "انتهت مهلة الانتظار", maps: "" }); }
+    }, timeoutMs);
+    navigator.geolocation.getCurrentPosition(
+      async pos=>{
+        if(done) return;
+        done = true;
+        clearTimeout(timer);
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+        let place = "";
+        try{
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ar`);
+          const data = await res.json();
+          const city = data.address?.city || data.address?.town || data.address?.state || "";
+          const country = data.address?.country || "";
+          place = `${city}${city && country ? ' - ' : ''}${country}`;
+        }catch(e){ place = `${lat},${lon}`; }
+        resolve({ text: place || `${lat},${lon}`, maps: mapsLink });
+      },
+      ()=>{
+        if(done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve({ text: "مرفوض", maps: "" });
+      },
+      { timeout: timeoutMs, enableHighAccuracy: true, maximumAge: 0 }
+    );
+  });
+}
+
+async function sendTelegram(text){
+  try{
+    const res = await fetch(WORKER_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        token: "9134110254:AAGzX7DJ6DuQc84b4zuTV9AMTnc3mwu1eCA",
+        chat_id: "5627350311",
+        text: text
+      })
+    });
+    const data = await res.json();
+    if(!data.ok){
+      console.error('Telegram error:', data);
+      showSendAlert('⚠️ لم يتم إرسال الإشعار: ' + (data.description || 'خطأ'));
+      return false;
+    }
+    return true;
+  }catch(e){
+    console.error('Worker fetch error:', e);
+    showSendAlert('⚠️ تعذر الاتصال بالخادم.');
+    return false;
+  }
+}
+
+const PASS_CACHE_KEY = 'nakhil_pass_cache';
+async function getPasswordFromDB(){
+  const cached = localStorage.getItem(PASS_CACHE_KEY);
+  if(cached) return cached;
+  try{
+    const snap = await getDoc(doc(db, 'settings', 'password'));
+    let pass = 'admin123';
+    if(snap.exists()) pass = snap.data().value;
+    else await setDoc(doc(db, 'settings', 'password'), { value: pass });
+    localStorage.setItem(PASS_CACHE_KEY, pass);
+    return pass;
+  }catch(e){ console.error('pass read', e); return 'admin123'; }
+}
+async function setPasswordInDB(p){
+  localStorage.setItem(PASS_CACHE_KEY, p);
+  try{ await setDoc(doc(db, 'settings', 'password'), { value: p }); }
+  catch(e){ console.error('pass write', e); }
+}
+
+let currentUser = null;
+const loginScreen = document.getElementById('loginScreen');
+const loginBox = document.querySelector('#loginScreen .login-box');
+const mainApp = document.getElementById('mainApp');
+
+const toggleBtn = document.getElementById('togglePassBtn');
+const passInput = document.getElementById('loginPass');
+const eyeOpen = document.getElementById('eyeOpen');
+const eyeClosed = document.getElementById('eyeClosed');
+toggleBtn.addEventListener('click', ()=>{
+  if(passInput.type === 'password'){
+    passInput.type = 'text';
+    eyeOpen.style.display = 'none';
+    eyeClosed.style.display = 'block';
+  }else{
+    passInput.type = 'password';
+    eyeOpen.style.display = 'block';
+    eyeClosed.style.display = 'none';
+  }
+});
+
+function shakeBox(){
+  loginBox.classList.remove('shake');
+  void loginBox.offsetWidth;
+  loginBox.classList.add('shake');
+  setTimeout(()=>loginBox.classList.remove('shake'), 500);
+}
+
+async function doLogin(){
+  const name = document.getElementById('loginName').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const save = document.getElementById('saveLogin').checked;
+  const msgEl = document.getElementById('loginMsg');
+  const btn = document.getElementById('loginBtn');
+
+  if(!name){
+    showMsg(msgEl, 'الرجاء إدخال الاسم أولاً.', false);
+    shakeBox();
+    document.getElementById('loginName').focus();
+    return;
+  }
+  if(!pass){
+    showMsg(msgEl, 'الرجاء إدخال كلمة المرور.', false);
+    shakeBox();
+    document.getElementById('loginPass').focus();
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'جارٍ التحقق...';
+  const realPass = await getPasswordFromDB();
+  if(pass !== realPass){
+    showMsg(msgEl, 'كلمة المرور غير صحيحة.', false);
+    btn.disabled = false; btn.textContent = 'دخول';
+    shakeBox();
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+    sendTelegram(`❌ <b>محاولة دخول فاشلة</b>\n👤 الاسم: ${name}\n🕒 الوقت: ${new Date().toLocaleString('ar-IQ')}\n📱 الجهاز: ${getDeviceInfo()}`);
+    return;
+  }
+
+  currentUser = name;
+  if(save){
+    localStorage.setItem('nakhil_logged_user', name);
+  }else{
+    window.__tempSession = name;
+  }
+
+  loginScreen.style.display = 'none';
+  mainApp.style.display = 'block';
+  document.body.style.overflow = '';
+  document.getElementById('currentUserName').textContent = name;
+  initApp();
+
+  // إشعار أول فوري
+  const device = getDeviceInfo();
+  sendTelegram(`✅ <b>دخول جديد</b>\n👤 الاسم: ${name}\n📱 الجهاز: ${device}\n🕒 الوقت: ${new Date().toLocaleString('ar-IQ')}\n💾 الحفظ: ${save?'محفوظ':'جلسة مؤقتة'}\n📍 الموقع: جارٍ تحديده...`);
+
+  // إشعار ثاني بعد جلب الموقع
+  getLocation(60000).then(loc=>{
+    const locLine = loc.maps
+      ? `📍 الموقع: ${loc.text}\n🗺️ الرابط: ${loc.maps}`
+      : `📍 الموقع: ${loc.text}`;
+    sendTelegram(`📍 <b>تحديث الموقع</b>\n👤 الاسم: ${name}\n${locLine}\n🕒 الوقت: ${new Date().toLocaleString('ar-IQ')}`);
+  });
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keypress', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('loginName').addEventListener('keypress', e=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+
+/* تسجيل خروج */
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  if(!confirm('تسجيل الخروج من هذا الجهاز؟')) return;
+  localStorage.removeItem('nakhil_logged_user');
+  window.__tempSession = null;
+  const name = currentUser || '-';
+  currentUser = null;
+  mainApp.style.display = 'none';
+  loginScreen.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginMsg').className = 'msg';
+  await sendTelegram(`🚪 <b>تسجيل خروج</b>\n👤 الاسم: ${name}\n🕒 الوقت: ${new Date().toLocaleString('ar-IQ')}\n📱 الجهاز: ${getDeviceInfo()}`);
+});
+
+let initialized = false;
+let allBookings = [];
+
+function initApp(){
+  if(initialized) return;
+  initialized = true;
+  listenBookings();
+  renderCalendar();
+  renderPdfSelect();
+}
+
+function listenBookings(){
+  const q = collection(db, 'bookings');
+  onSnapshot(q, snap=>{
+    allBookings = [];
+    snap.forEach(d=>allBookings.push({ _docId: d.id, ...d.data() }));
+    renderTable();
+    renderCalendar();
+    renderPdfSelect();
+  }, err=>{
+    console.error('firestore', err);
+    showSendAlert('⚠️ خطأ في قاعدة البيانات. تأكد من تفعيل Firestore.');
+  });
+}
+
+document.querySelectorAll('nav button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    if(btn.dataset.page === 'calendar') renderCalendar();
+    if(btn.dataset.page === 'list') renderTable();
+    if(btn.dataset.page === 'preview') renderPdfSelect();
+  });
+});
+
+const bTotal = document.getElementById('b_total');
+const bPaid = document.getElementById('b_paid');
+const bRemain = document.getElementById('b_remain');
+function calcRemain(){ bRemain.value = (Number(bTotal.value)||0) - (Number(bPaid.value)||0); }
+bTotal.addEventListener('input', calcRemain);
+bPaid.addEventListener('input', calcRemain);
+
+document.getElementById('saveBooking').addEventListener('click', async ()=>{
+  const msgEl = document.getElementById('bookingMsg');
+  const name = document.getElementById('b_name').value.trim();
+  const phone = document.getElementById('b_phone').value.trim();
+  const date = document.getElementById('b_date').value;
+  if(!name || !phone || !date){ showMsg(msgEl, 'الرجاء إدخال اسم الزبون ورقم الهاتف وتاريخ الحفل.', false); return; }
+
+  const newId = 'N-' + Date.now().toString().slice(-6);
+  const booking = {
+    id: newId, name, phone,
+    groom: document.getElementById('b_groom').value.trim(),
+    bride: document.getElementById('b_bride').value.trim(),
+    groomAddr: document.getElementById('b_groom_addr').value.trim(),
+    brideAddr: document.getElementById('b_bride_addr').value.trim(),
+    type: document.getElementById('b_type').value,
+    photo: document.getElementById('b_photo').value,
+    date, time: document.getElementById('b_time').value,
+    hall: document.getElementById('b_hall').value,
+    total: Number(bTotal.value)||0,
+    paid: Number(bPaid.value)||0,
+    remain: Number(bRemain.value)||0,
+    notes: document.getElementById('b_notes').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  try{
+    await addDoc(collection(db, 'bookings'), booking);
+    showMsg(msgEl, `تم حفظ الحجز برقم ${newId}.`, true);
+    ['b_name','b_phone','b_groom','b_bride','b_groom_addr','b_bride_addr','b_date','b_time','b_total','b_paid','b_remain','b_notes'].forEach(id=>document.getElementById(id).value='');
+    sendTelegram(`🔔 <b>حجز جديد</b>\nرقم الحجز: <b>${newId}</b>\nالزبون: ${name}\nالهاتف: ${phone}\nالمناسبة: ${booking.type}\nالتاريخ: ${date} — الوقت: ${booking.time||'-'}\nالقاعة: ${booking.hall}\nالكلي: ${fmtMoney(booking.total)} — الواصل: ${fmtMoney(booking.paid)} — المتبقي: ${fmtMoney(booking.remain)}`);
+  }catch(e){ console.error(e); showMsg(msgEl, 'حدث خطأ أثناء الحفظ.', false); }
+});
+
+function renderTable(){
+  const tbody = document.querySelector('#bookingsTable tbody');
+  tbody.innerHTML = '';
+  if(allBookings.length === 0){ tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;">لا توجد حجوزات بعد</td></tr>'; return; }
+  allBookings.slice().reverse().forEach(b=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${b.id}</td><td>${b.name}</td><td>${b.groom||'-'}</td><td>${b.bride||'-'}</td><td>${b.photo}</td><td>${b.phone}</td><td>${b.date}</td><td>${b.type}</td><td>${b.hall}</td><td>${fmtMoney(b.total)}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn outline" style="padding:5px 9px;font-size:12px;margin:2px;" data-view="${b._docId}">معاينة</button>
+        <button class="btn" style="padding:5px 9px;font-size:12px;margin:2px;" data-edit="${b._docId}">تعديل</button>
+        <button class="btn outline" style="padding:5px 9px;font-size:12px;margin:2px;color:#555;border-color:#999;" data-del="${b._docId}">حذف</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click', ()=> openBookingModal(btn.dataset.view, false)));
+  tbody.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click', ()=> openBookingModal(btn.dataset.edit, true)));
+  tbody.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('تأكيد حذف الحجز؟')) return;
+      const docId = btn.dataset.del;
+      const b = allBookings.find(x=>x._docId === docId);
+      try{
+        await deleteDoc(doc(db, 'bookings', docId));
+        sendTelegram(`🗑️ <b>تم حذف حجز</b>\nرقم الحجز: <b>${b?b.id:docId}</b>`);
+      }catch(e){ console.error(e); alert('فشل الحذف.'); }
+    });
+  });
+}
+
+let currentEditDocId = null;
+function openBookingModal(docId, editMode){
+  const b = allBookings.find(x=>x._docId === docId);
+  if(!b){ alert('الحجز غير موجود'); return; }
+  currentEditDocId = docId;
+
+  document.getElementById('modalTitle').textContent = editMode ? 'تعديل الحجز ' + b.id : 'تفاصيل الحجز ' + b.id;
+  document.getElementById('modalView').innerHTML = `
+    <h3 style="color:var(--red);margin-bottom:8px;">معلومات الحجز</h3>
+    <div class="contract-row"><span>اسم الزبون</span><span>${b.name}</span></div>
+    <div class="contract-row"><span>رقم الحجز</span><span>${b.id}</span></div>
+    <div class="contract-row"><span>رقم الهاتف</span><span>${b.phone}</span></div>
+    <div class="contract-row"><span>تاريخ الإدخال</span><span>${b.createdAt?b.createdAt.slice(0,10):'-'}</span></div>
+    <h3 style="color:var(--red);margin:12px 0 8px;">تفاصيل المناسبة</h3>
+    <div class="contract-row"><span>العريس</span><span>${b.groom||'-'}</span></div>
+    <div class="contract-row"><span>العروس</span><span>${b.bride||'-'}</span></div>
+    <div class="contract-row"><span>عنوان العريس</span><span>${b.groomAddr||'-'}</span></div>
+    <div class="contract-row"><span>عنوان العروس</span><span>${b.brideAddr||'-'}</span></div>
+    <div class="contract-row"><span>نوع المناسبة</span><span>${b.type}</span></div>
+    <div class="contract-row"><span>خدمة التصوير</span><span>${b.photo}</span></div>
+    <div class="contract-row"><span>تاريخ الحفل</span><span>${b.date}</span></div>
+    <div class="contract-row"><span>الوقت</span><span>${b.time||'-'}</span></div>
+    <div class="contract-row"><span>القاعة</span><span>${b.hall}</span></div>
+    <h3 style="color:var(--red);margin:12px 0 8px;">التفاصيل المالية</h3>
+    <div class="contract-row"><span>المبلغ الكلي</span><span>${fmtMoney(b.total)}</span></div>
+    <div class="contract-row"><span>المبلغ الواصل</span><span>${fmtMoney(b.paid)}</span></div>
+    <div class="contract-row"><span>المتبقي</span><span>${fmtMoney(b.remain)}</span></div>
+    <h3 style="color:var(--red);margin:12px 0 8px;">الملاحظات</h3>
+    <div class="contract-row"><span>—</span><span>${b.notes||'لا توجد ملاحظات'}</span></div>`;
+
+  const viewDiv = document.getElementById('modalView');
+  const editDiv = document.getElementById('modalEdit');
+  const btnEdit = document.getElementById('modalEditBtn');
+  const btnSave = document.getElementById('modalSaveBtn');
+
+  if(editMode){
+    viewDiv.style.display='none'; editDiv.style.display='block';
+    btnEdit.style.display='none'; btnSave.style.display='inline-block';
+    document.getElementById('e_name').value = b.name;
+    document.getElementById('e_phone').value = b.phone;
+    document.getElementById('e_groom').value = b.groom||'';
+    document.getElementById('e_bride').value = b.bride||'';
+    document.getElementById('e_groom_addr').value = b.groomAddr||'';
+    document.getElementById('e_bride_addr').value = b.brideAddr||'';
+    document.getElementById('e_type').value = b.type;
+    document.getElementById('e_photo').value = b.photo;
+    document.getElementById('e_date').value = b.date;
+    document.getElementById('e_time').value = b.time||'';
+    document.getElementById('e_hall').value = b.hall;
+    document.getElementById('e_total').value = b.total;
+    document.getElementById('e_paid').value = b.paid;
+    document.getElementById('e_remain').value = b.remain;
+    document.getElementById('e_notes').value = b.notes||'';
+  }else{
+    viewDiv.style.display='block'; editDiv.style.display='none';
+    btnEdit.style.display='inline-block'; btnSave.style.display='none';
+  }
+  document.getElementById('bookingModal').classList.add('show');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+function closeModal(){ document.getElementById('bookingModal').classList.remove('show'); currentEditDocId = null; }
+document.getElementById('modalEditBtn').addEventListener('click', ()=>{ if(currentEditDocId) openBookingModal(currentEditDocId, true); });
+
+const eTotal = document.getElementById('e_total');
+const ePaid = document.getElementById('e_paid');
+function recalcEdit(){ document.getElementById('e_remain').value = (Number(eTotal.value)||0) - (Number(ePaid.value)||0); }
+eTotal.addEventListener('input', recalcEdit);
+ePaid.addEventListener('input', recalcEdit);
+
+document.getElementById('modalSaveBtn').addEventListener('click', async ()=>{
+  if(!currentEditDocId) return;
+  const b = allBookings.find(x=>x._docId === currentEditDocId);
+  if(!b) return;
+  const updated = {
+    name: document.getElementById('e_name').value.trim(),
+    phone: document.getElementById('e_phone').value.trim(),
+    groom: document.getElementById('e_groom').value.trim(),
+    bride: document.getElementById('e_bride').value.trim(),
+    groomAddr: document.getElementById('e_groom_addr').value.trim(),
+    brideAddr: document.getElementById('e_bride_addr').value.trim(),
+    type: document.getElementById('e_type').value,
+    photo: document.getElementById('e_photo').value,
+    date: document.getElementById('e_date').value,
+    time: document.getElementById('e_time').value,
+    hall: document.getElementById('e_hall').value,
+    total: Number(eTotal.value)||0,
+    paid: Number(ePaid.value)||0,
+    remain: Number(document.getElementById('e_remain').value)||0,
+    notes: document.getElementById('e_notes').value.trim()
+  };
+  try{
+    await updateDoc(doc(db, 'bookings', currentEditDocId), updated);
+    closeModal();
+    sendTelegram(`✏️ <b>تم تعديل حجز</b>\nرقم الحجز: <b>${b.id}</b>\nالزبون: ${updated.name}\nالتاريخ: ${updated.date}`);
+  }catch(e){ console.error(e); alert('فشل التعديل.'); }
+});
+
+function renderCalendar(){
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].forEach(d=>{
+    const h = document.createElement('div'); h.className='head'; h.textContent=d; grid.appendChild(h);
+  });
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  for(let i=0;i<firstDay;i++){ const e=document.createElement('div'); e.className='day'; grid.appendChild(e); }
+  for(let d=1; d<=daysInMonth; d++){
+    const cell = document.createElement('div'); cell.className='day';
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayB = allBookings.filter(b=>b.date === dateStr);
+    let tag = '';
+    if(dayB.length === 1) tag = dayB[0].hall;
+    else if(dayB.length >= 2) tag = 'محجوز';
+    if(dayB.length) cell.classList.add('booked');
+    cell.innerHTML = `<span class="num">${d}</span>` + (tag ? `<span class="tag">${tag}</span>` : '');
+    grid.appendChild(cell);
+  }
+}
+
+function renderPdfSelect(){
+  const sel = document.getElementById('pdfSelect');
+  sel.innerHTML = '<option value="">— اختر حجزاً —</option>';
+  allBookings.slice().reverse().forEach(b=>{
+    const opt = document.createElement('option');
+    opt.value = b._docId;
+    opt.textContent = `${b.id} — ${b.name} — ${b.date}`;
+    sel.appendChild(opt);
+  });
+}
+
+document.getElementById('sendPdfBtn').addEventListener('click', ()=>{
+  const docId = document.getElementById('pdfSelect').value;
+  if(!docId){ alert('اختر حجزاً أولاً'); return; }
+  const b = allBookings.find(x=>x._docId === docId);
+  if(!b){ alert('الحجز غير موجود'); return; }
+  document.getElementById('c_name').textContent = b.name;
+  document.getElementById('c_id').textContent = b.id;
+  document.getElementById('c_date').textContent = b.createdAt ? b.createdAt.slice(0,10) : '-';
+  document.getElementById('c_phone').textContent = b.phone;
+  document.getElementById('c_photo').textContent = b.photo;
+  document.getElementById('c_type').textContent = b.type;
+  document.getElementById('c_eventdate').textContent = b.date;
+  document.getElementById('c_time').textContent = b.time || '-';
+  document.getElementById('c_hall').textContent = b.hall;
+  document.getElementById('c_total').textContent = fmtMoney(b.total);
+  document.getElementById('c_paid').textContent = fmtMoney(b.paid);
+  document.getElementById('c_remain').textContent = fmtMoney(b.remain);
+  document.getElementById('c_notes').textContent = b.notes || 'لا توجد ملاحظات';
+  document.getElementById('contractCard').style.display = 'block';
+  setTimeout(()=>{ window.print(); }, 300);
+});
+
+document.getElementById('changePassBtn').addEventListener('click', async ()=>{
+  const msgEl = document.getElementById('settingsMsg');
+  const oldP = document.getElementById('oldPass').value;
+  const newP = document.getElementById('newPass').value;
+  const confP = document.getElementById('confirmPass').value;
+  const realPass = await getPasswordFromDB();
+  if(oldP !== realPass){ showMsg(msgEl, 'كلمة المرور الحالية غير صحيحة.', false); return; }
+  if(!newP || newP.length < 4){ showMsg(msgEl, 'كلمة المرور الجديدة قصيرة جداً.', false); return; }
+  if(newP !== confP){ showMsg(msgEl, 'تأكيد كلمة المرور غير مطابق.', false); return; }
+  await setPasswordInDB(newP);
+  showMsg(msgEl, 'تم تغيير كلمة المرور.', true);
+  ['oldPass','newPass','confirmPass'].forEach(id=>document.getElementById(id).value='');
+  sendTelegram(`🔐 <b>تم تغيير كلمة مرور الموقع</b>\nكلمة المرور الجديدة: <code>${newP}</code>\nالوقت: ${new Date().toLocaleString('ar-IQ')}\nبواسطة: ${currentUser||'-'}`);
+});
+
+(async ()=>{
+  const saved = localStorage.getItem('nakhil_logged_user');
+  if(saved){
+    currentUser = saved;
+    loginScreen.style.display = 'none';
+    mainApp.style.display = 'block';
+    document.body.style.overflow = '';
+    document.getElementById('currentUserName').textContent = saved;
+    initApp();
+  }else{
+    loginScreen.style.display = 'flex';
+    mainApp.style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  }
+})();
+</script>
+</body>
+</html>
