@@ -134,7 +134,6 @@
     <p>الرجاء إدخال بيانات الدخول</p>
     <input type="text" id="loginName" placeholder="اسمك الكامل" autocomplete="off">
     <div class="pass-row">
-      <!-- حقل كلمة المرور: type=text مع إخفاء بصري -->
       <input type="text" id="loginPass" placeholder="كلمة المرور" autocomplete="off" spellcheck="false" style="-webkit-text-security: disc;">
       <button type="button" class="toggle-pass" id="togglePassBtn" title="إظهار/إخفاء كلمة المرور">
         <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -194,16 +193,15 @@
       </div>
       <div class="row">
         <div><label>تاريخ الحفل</label><input type="date" id="b_date"></div>
-        <div><label>الوقت</label><input type="time" id="b_time"></div>
-      </div>
-      <div class="row">
         <div><label>القاعة</label>
           <select id="b_hall"><option value="قاعة رقم 1">قاعة رقم 1</option><option value="قاعة رقم 2">قاعة رقم 2</option><option value="القاعتين">القاعتين</option></select>
         </div>
-        <div><label>المبلغ الكلي (د.ع)</label><input type="number" id="b_total" placeholder="0" inputmode="numeric"></div>
       </div>
       <div class="row">
+        <div><label>المبلغ الكلي (د.ع)</label><input type="number" id="b_total" placeholder="0" inputmode="numeric"></div>
         <div><label>المبلغ الواصل (د.ع)</label><input type="number" id="b_paid" placeholder="0" inputmode="numeric"></div>
+      </div>
+      <div class="row">
         <div><label>المتبقي (د.ع)</label><input type="number" id="b_remain" placeholder="0" readonly></div>
       </div>
       <label>ملاحظات</label>
@@ -216,7 +214,7 @@
   <section id="page-preview" class="page">
     <div class="card">
       <h2>إرسال PDF</h2>
-      <div class="info-box">اختر الحجز من القائمة، ثم اضغط "إرسال PDF" — راح تفتح نافذة الطباعة، اختر "حفظ كـ PDF".</div>
+      <div class="info-box">اختر الحجز من القائمة، ثم اضغط "إرسال PDF" — راح تفتح نافذة الطباعة أو تبويب جديد، اختر "حفظ كـ PDF".</div>
       <label>اختر الحجز</label>
       <select id="pdfSelect"><option value="">— اختر حجزاً —</option></select>
       <button class="btn" id="sendPdfBtn">إرسال PDF</button>
@@ -234,7 +232,6 @@
         <h3>تفاصيل المناسبة</h3>
         <div class="contract-row"><span>نوع المناسبة</span><span id="c_type">-</span></div>
         <div class="contract-row"><span>التاريخ</span><span id="c_eventdate">-</span></div>
-        <div class="contract-row"><span>الوقت</span><span id="c_time">-</span></div>
         <div class="contract-row"><span>القاعة المختارة</span><span id="c_hall">-</span></div>
         <h3>التفاصيل المالية</h3>
         <div class="contract-row"><span>المبلغ الكلي</span><span id="c_total">0 د.ع</span></div>
@@ -310,12 +307,12 @@
         <div><label>نوع المناسبة</label><select id="e_type"><option>زفاف</option><option>خطوبة</option><option>عقيقة</option><option>حنة</option><option>مناسبة أخرى</option></select></div>
         <div><label>خدمة التصوير</label><select id="e_photo"><option value="بدون تصوير">بدون تصوير</option><option value="مع تصوير">مع تصوير</option></select></div>
       </div>
-      <div class="row"><div><label>تاريخ الحفل</label><input type="date" id="e_date"></div><div><label>الوقت</label><input type="time" id="e_time"></div></div>
       <div class="row">
+        <div><label>تاريخ الحفل</label><input type="date" id="e_date"></div>
         <div><label>القاعة</label><select id="e_hall"><option value="قاعة رقم 1">قاعة رقم 1</option><option value="قاعة رقم 2">قاعة رقم 2</option><option value="القاعتين">القاعتين</option></select></div>
-        <div><label>المبلغ الكلي</label><input type="number" id="e_total"></div>
       </div>
-      <div class="row"><div><label>المبلغ الواصل</label><input type="number" id="e_paid"></div><div><label>المتبقي</label><input type="number" id="e_remain" readonly></div></div>
+      <div class="row"><div><label>المبلغ الكلي</label><input type="number" id="e_total"></div><div><label>المبلغ الواصل</label><input type="number" id="e_paid"></div></div>
+      <div class="row"><div><label>المتبقي</label><input type="number" id="e_remain" readonly></div></div>
       <label>ملاحظات</label><textarea id="e_notes" rows="2"></textarea>
     </div>
     <div class="modal-foot" id="modalFoot">
@@ -352,7 +349,6 @@ function showSendAlert(msg){
   setTimeout(()=>el.classList.remove('show'), 5000);
 }
 
-/* كشف الجهاز */
 function getDeviceInfo(){
   const ua = navigator.userAgent;
   let device = "غير معروف", os = "", browser = "";
@@ -369,7 +365,6 @@ function getDeviceInfo(){
   return `${device} - ${os} - ${browser}`;
 }
 
-/* الموقع الجغرافي (60 ثانية + رابط خرائط) */
 function getLocation(timeoutMs = 60000){
   return new Promise(resolve=>{
     if(!navigator.geolocation){ resolve({ text: "غير متاح", maps: "" }); return; }
@@ -523,11 +518,9 @@ async function doLogin(){
   document.getElementById('currentUserName').textContent = name;
   initApp();
 
-  // إشعار أول فوري
   const device = getDeviceInfo();
   sendTelegram(`✅ <b>دخول جديد</b>\n👤 الاسم: ${name}\n📱 الجهاز: ${device}\n🕒 الوقت: ${new Date().toLocaleString('ar-IQ')}\n💾 الحفظ: ${save?'محفوظ':'جلسة مؤقتة'}\n📍 الموقع: جارٍ تحديده...`);
 
-  // إشعار ثاني بعد جلب الموقع
   getLocation(60000).then(loc=>{
     const locLine = loc.maps
       ? `📍 الموقع: ${loc.text}\n🗺️ الرابط: ${loc.maps}`
@@ -540,7 +533,6 @@ document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('loginPass').addEventListener('keypress', e=>{ if(e.key==='Enter') doLogin(); });
 document.getElementById('loginName').addEventListener('keypress', e=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
 
-/* تسجيل خروج */
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   if(!confirm('تسجيل الخروج من هذا الجهاز؟')) return;
   localStorage.removeItem('nakhil_logged_user');
@@ -616,7 +608,7 @@ document.getElementById('saveBooking').addEventListener('click', async ()=>{
     brideAddr: document.getElementById('b_bride_addr').value.trim(),
     type: document.getElementById('b_type').value,
     photo: document.getElementById('b_photo').value,
-    date, time: document.getElementById('b_time').value,
+    date,
     hall: document.getElementById('b_hall').value,
     total: Number(bTotal.value)||0,
     paid: Number(bPaid.value)||0,
@@ -627,8 +619,8 @@ document.getElementById('saveBooking').addEventListener('click', async ()=>{
   try{
     await addDoc(collection(db, 'bookings'), booking);
     showMsg(msgEl, `تم حفظ الحجز برقم ${newId}.`, true);
-    ['b_name','b_phone','b_groom','b_bride','b_groom_addr','b_bride_addr','b_date','b_time','b_total','b_paid','b_remain','b_notes'].forEach(id=>document.getElementById(id).value='');
-    sendTelegram(`🔔 <b>حجز جديد</b>\nرقم الحجز: <b>${newId}</b>\nالزبون: ${name}\nالهاتف: ${phone}\nالمناسبة: ${booking.type}\nالتاريخ: ${date} — الوقت: ${booking.time||'-'}\nالقاعة: ${booking.hall}\nالكلي: ${fmtMoney(booking.total)} — الواصل: ${fmtMoney(booking.paid)} — المتبقي: ${fmtMoney(booking.remain)}`);
+    ['b_name','b_phone','b_groom','b_bride','b_groom_addr','b_bride_addr','b_date','b_total','b_paid','b_remain','b_notes'].forEach(id=>document.getElementById(id).value='');
+    sendTelegram(`🔔 <b>حجز جديد</b>\nرقم الحجز: <b>${newId}</b>\nالزبون: ${name}\nالهاتف: ${phone}\nالمناسبة: ${booking.type}\nالتاريخ: ${date}\nالقاعة: ${booking.hall}\nالكلي: ${fmtMoney(booking.total)} — الواصل: ${fmtMoney(booking.paid)} — المتبقي: ${fmtMoney(booking.remain)}`);
   }catch(e){ console.error(e); showMsg(msgEl, 'حدث خطأ أثناء الحفظ.', false); }
 });
 
@@ -682,7 +674,6 @@ function openBookingModal(docId, editMode){
     <div class="contract-row"><span>نوع المناسبة</span><span>${b.type}</span></div>
     <div class="contract-row"><span>خدمة التصوير</span><span>${b.photo}</span></div>
     <div class="contract-row"><span>تاريخ الحفل</span><span>${b.date}</span></div>
-    <div class="contract-row"><span>الوقت</span><span>${b.time||'-'}</span></div>
     <div class="contract-row"><span>القاعة</span><span>${b.hall}</span></div>
     <h3 style="color:var(--red);margin:12px 0 8px;">التفاصيل المالية</h3>
     <div class="contract-row"><span>المبلغ الكلي</span><span>${fmtMoney(b.total)}</span></div>
@@ -708,7 +699,6 @@ function openBookingModal(docId, editMode){
     document.getElementById('e_type').value = b.type;
     document.getElementById('e_photo').value = b.photo;
     document.getElementById('e_date').value = b.date;
-    document.getElementById('e_time').value = b.time||'';
     document.getElementById('e_hall').value = b.hall;
     document.getElementById('e_total').value = b.total;
     document.getElementById('e_paid').value = b.paid;
@@ -746,7 +736,6 @@ document.getElementById('modalSaveBtn').addEventListener('click', async ()=>{
     type: document.getElementById('e_type').value,
     photo: document.getElementById('e_photo').value,
     date: document.getElementById('e_date').value,
-    time: document.getElementById('e_time').value,
     hall: document.getElementById('e_hall').value,
     total: Number(eTotal.value)||0,
     paid: Number(ePaid.value)||0,
@@ -800,6 +789,7 @@ document.getElementById('sendPdfBtn').addEventListener('click', ()=>{
   if(!docId){ alert('اختر حجزاً أولاً'); return; }
   const b = allBookings.find(x=>x._docId === docId);
   if(!b){ alert('الحجز غير موجود'); return; }
+
   document.getElementById('c_name').textContent = b.name;
   document.getElementById('c_id').textContent = b.id;
   document.getElementById('c_date').textContent = b.createdAt ? b.createdAt.slice(0,10) : '-';
@@ -807,14 +797,57 @@ document.getElementById('sendPdfBtn').addEventListener('click', ()=>{
   document.getElementById('c_photo').textContent = b.photo;
   document.getElementById('c_type').textContent = b.type;
   document.getElementById('c_eventdate').textContent = b.date;
-  document.getElementById('c_time').textContent = b.time || '-';
   document.getElementById('c_hall').textContent = b.hall;
   document.getElementById('c_total').textContent = fmtMoney(b.total);
   document.getElementById('c_paid').textContent = fmtMoney(b.paid);
   document.getElementById('c_remain').textContent = fmtMoney(b.remain);
   document.getElementById('c_notes').textContent = b.notes || 'لا توجد ملاحظات';
+
   document.getElementById('contractCard').style.display = 'block';
-  setTimeout(()=>{ window.print(); }, 300);
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if(isMobile){
+    const printContent = document.getElementById('printArea').outerHTML;
+    const newWin = window.open('', '_blank');
+    if(newWin){
+      newWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>عقد حجز - ${b.id}</title>
+          <style>
+            body{font-family:Tahoma,sans-serif;padding:10px;color:#000;background:#fff;}
+            .print-area{max-width:800px;margin:0 auto;}
+            h2{text-align:center;color:#c62828;font-size:16px;margin-bottom:2px;}
+            .center{text-align:center;font-size:11px;color:#333;margin-bottom:10px;}
+            h3{color:#8e0000;font-size:12px;margin:8px 0 3px;}
+            .contract-row{display:flex;justify-content:space-between;border-bottom:1px solid #bbb;padding:4px 0;font-size:11px;}
+            .contract-row span:first-child{color:#555;}
+            .contract-row span:last-child{font-weight:600;}
+            .terms{font-size:10px;line-height:1.5;margin-top:6px;}
+            .terms li{margin-right:14px;}
+            .sign{display:flex;justify-content:space-between;margin-top:14px;font-size:11px;}
+            .sign div{text-align:center;}
+            .btn-print{display:block;width:100%;padding:12px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:bold;margin:10px 0;}
+            @media print{ .btn-print{display:none;} @page{size:A4;margin:8mm;} }
+          </style>
+        </head>
+        <body>
+          <button class="btn-print" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+          ${printContent}
+        </body>
+        </html>
+      `);
+      newWin.document.close();
+    }else{
+      alert('المتصفح منع فتح نافذة جديدة. اسمح بالنوافذ المنبثقة أو استخدم زر الطباعة من قائمة المتصفح.');
+    }
+  }else{
+    setTimeout(()=>{ window.print(); }, 300);
+  }
 });
 
 document.getElementById('changePassBtn').addEventListener('click', async ()=>{
