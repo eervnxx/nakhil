@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>قاعة النخيل للمناسبات</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{--red:#c62828;--red-dark:#8e0000;--red-light:#ffebee;--white:#fff;--gray:#f5f5f5;--text:#222;--border:#e0e0e0;}
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;-webkit-tap-highlight-color:transparent;}
@@ -88,6 +89,8 @@
   .logout-bar b{color:var(--red);}
   .logout-bar button{background:var(--red);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;}
   .logout-bar button:hover{background:var(--red-dark);}
+  .pdf-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .pdf-actions button{flex:1;min-width:140px;}
   @media(max-width:768px){
     main{padding:14px;}
     header{padding:14px 16px;}
@@ -175,8 +178,8 @@
         <div><label>اسم الزبون</label><input id="b_name" placeholder="الاسم الكامل"></div>
         <div><label>رقم الهاتف</label><input id="b_phone" placeholder="07XXXXXXXXX" inputmode="tel"></div>
       </div>
-      <div class="row">
-        <div><label>اسم العريس</label><input id="b_groom" placeholder="اسم العريس"></div>
+      <div class="row">        <div><label>اسم العريس</label><input id="b_groom" placeholder="اسم العريس"></div>
+
         <div><label>اسم العروس</label><input id="b_bride" placeholder="اسم العروس"></div>
       </div>
       <div class="row">
@@ -185,7 +188,7 @@
       </div>
       <div class="row">
         <div><label>نوع المناسبة</label>
-          <select id="b_type"><option>زفاف</option><option>خطوبة</option><option>عقيقة</option><option>حنة</option><option>مناسبة أخرى</option></select>
+          <select id="b_type"><option>زفاف</option><option>خطوبة</option><option>عيد ميلاد</option><option>حنة</option><option>مناسبة أخرى</option></select>
         </div>
         <div><label>خدمة التصوير</label>
           <select id="b_photo"><option value="بدون تصوير">بدون تصوير</option><option value="مع تصوير">مع تصوير</option></select>
@@ -214,10 +217,13 @@
   <section id="page-preview" class="page">
     <div class="card">
       <h2>إرسال PDF</h2>
-      <div class="info-box">اختر الحجز من القائمة، ثم اضغط "إرسال PDF" — راح تفتح نافذة الطباعة أو تبويب جديد، اختر "حفظ كـ PDF".</div>
+      <div class="info-box">اختر الحجز، ثم اختر: طباعة/PDF أو حفظ كصورة.</div>
       <label>اختر الحجز</label>
       <select id="pdfSelect"><option value="">— اختر حجزاً —</option></select>
-      <button class="btn" id="sendPdfBtn">إرسال PDF</button>
+      <div class="pdf-actions">
+        <button class="btn" id="sendPdfBtn">🖨️ طباعة / حفظ PDF</button>
+        <button class="btn outline" id="saveImageBtn">🖼️ حفظ كصورة</button>
+      </div>
     </div>
     <div class="card" id="contractCard" style="display:none;">
       <div class="print-area" id="printArea">
@@ -304,7 +310,7 @@
       <div class="row"><div><label>اسم العريس</label><input id="e_groom"></div><div><label>اسم العروس</label><input id="e_bride"></div></div>
       <div class="row"><div><label>عنوان العريس</label><input id="e_groom_addr"></div><div><label>عنوان العروس</label><input id="e_bride_addr"></div></div>
       <div class="row">
-        <div><label>نوع المناسبة</label><select id="e_type"><option>زفاف</option><option>خطوبة</option><option>عقيقة</option><option>حنة</option><option>مناسبة أخرى</option></select></div>
+        <div><label>نوع المناسبة</label><select id="e_type"><option>زفاف</option><option>خطوبة</option><option>عيد ميلاد</option><option>حنة</option><option>مناسبة أخرى</option></select></div>
         <div><label>خدمة التصوير</label><select id="e_photo"><option value="بدون تصوير">بدون تصوير</option><option value="مع تصوير">مع تصوير</option></select></div>
       </div>
       <div class="row">
@@ -784,12 +790,7 @@ function renderPdfSelect(){
   });
 }
 
-document.getElementById('sendPdfBtn').addEventListener('click', ()=>{
-  const docId = document.getElementById('pdfSelect').value;
-  if(!docId){ alert('اختر حجزاً أولاً'); return; }
-  const b = allBookings.find(x=>x._docId === docId);
-  if(!b){ alert('الحجز غير موجود'); return; }
-
+function fillContract(b){
   document.getElementById('c_name').textContent = b.name;
   document.getElementById('c_id').textContent = b.id;
   document.getElementById('c_date').textContent = b.createdAt ? b.createdAt.slice(0,10) : '-';
@@ -802,51 +803,106 @@ document.getElementById('sendPdfBtn').addEventListener('click', ()=>{
   document.getElementById('c_paid').textContent = fmtMoney(b.paid);
   document.getElementById('c_remain').textContent = fmtMoney(b.remain);
   document.getElementById('c_notes').textContent = b.notes || 'لا توجد ملاحظات';
-
   document.getElementById('contractCard').style.display = 'block';
+}
+
+/* زر الطباعة / PDF */
+document.getElementById('sendPdfBtn').addEventListener('click', ()=>{
+  const docId = document.getElementById('pdfSelect').value;
+  if(!docId){ alert('اختر حجزاً أولاً'); return; }
+  const b = allBookings.find(x=>x._docId === docId);
+  if(!b){ alert('الحجز غير موجود'); return; }
+  fillContract(b);
 
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
   if(isMobile){
     const printContent = document.getElementById('printArea').outerHTML;
     const newWin = window.open('', '_blank');
     if(newWin){
       newWin.document.write(`
-        <!DOCTYPE html>
-        <html lang="ar" dir="rtl">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>عقد حجز - ${b.id}</title>
-          <style>
-            body{font-family:Tahoma,sans-serif;padding:10px;color:#000;background:#fff;}
-            .print-area{max-width:800px;margin:0 auto;}
-            h2{text-align:center;color:#c62828;font-size:16px;margin-bottom:2px;}
-            .center{text-align:center;font-size:11px;color:#333;margin-bottom:10px;}
-            h3{color:#8e0000;font-size:12px;margin:8px 0 3px;}
-            .contract-row{display:flex;justify-content:space-between;border-bottom:1px solid #bbb;padding:4px 0;font-size:11px;}
-            .contract-row span:first-child{color:#555;}
-            .contract-row span:last-child{font-weight:600;}
-            .terms{font-size:10px;line-height:1.5;margin-top:6px;}
-            .terms li{margin-right:14px;}
-            .sign{display:flex;justify-content:space-between;margin-top:14px;font-size:11px;}
-            .sign div{text-align:center;}
-            .btn-print{display:block;width:100%;padding:12px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:bold;margin:10px 0;}
-            @media print{ .btn-print{display:none;} @page{size:A4;margin:8mm;} }
-          </style>
-        </head>
-        <body>
+        <!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>عقد حجز - ${b.id}</title>
+        <style>
+          body{font-family:Tahoma,sans-serif;padding:10px;color:#000;background:#fff;}
+          .print-area{max-width:800px;margin:0 auto;}
+          h2{text-align:center;color:#c62828;font-size:16px;margin-bottom:2px;}
+          .center{text-align:center;font-size:11px;color:#333;margin-bottom:10px;}
+          h3{color:#8e0000;font-size:12px;margin:8px 0 3px;}
+          .contract-row{display:flex;justify-content:space-between;border-bottom:1px solid #bbb;padding:4px 0;font-size:11px;}
+          .contract-row span:first-child{color:#555;}
+          .contract-row span:last-child{font-weight:600;}
+          .terms{font-size:10px;line-height:1.5;margin-top:6px;}
+          .terms li{margin-right:14px;}
+          .sign{display:flex;justify-content:space-between;margin-top:14px;font-size:11px;}
+          .sign div{text-align:center;}
+          .btn-print{display:block;width:100%;padding:12px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:bold;margin:10px 0;}
+          @media print{ .btn-print{display:none;} @page{size:A4;margin:8mm;} }
+        </style></head><body>
           <button class="btn-print" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
           ${printContent}
-        </body>
-        </html>
+        </body></html>
       `);
       newWin.document.close();
     }else{
-      alert('المتصفح منع فتح نافذة جديدة. اسمح بالنوافذ المنبثقة أو استخدم زر الطباعة من قائمة المتصفح.');
+      alert('المتصفح منع فتح نافذة جديدة. اسمح بالنوافذ المنبثقة.');
     }
   }else{
     setTimeout(()=>{ window.print(); }, 300);
+  }
+});
+
+/* زر حفظ كصورة — نفس ترتيب الطباعة وقياس A4 */
+document.getElementById('saveImageBtn').addEventListener('click', async ()=>{
+  const docId = document.getElementById('pdfSelect').value;
+  if(!docId){ alert('اختر حجزاً أولاً'); return; }
+  const b = allBookings.find(x=>x._docId === docId);
+  if(!b){ alert('الحجز غير موجود'); return; }
+  fillContract(b);
+
+  const btn = document.getElementById('saveImageBtn');
+  btn.disabled = true;
+  btn.textContent = 'جارٍ التجهيز...';
+
+  try{
+    const target = document.getElementById('printArea');
+    const clone = target.cloneNode(true);
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
+      position:fixed;top:-99999px;left:0;
+      width:794px;min-height:1123px;background:#fff;
+      padding:30px 40px;font-family:'Segoe UI',Tahoma,sans-serif;
+      color:#000;box-sizing:border-box;
+    `;
+    clone.style.cssText = `width:100%;max-width:none;padding:0;margin:0;border:none;font-size:11px;line-height:1.35;color:#000;background:#fff;`;
+    clone.querySelectorAll('h2').forEach(el=>{ el.style.cssText = 'text-align:center;color:#c62828;font-size:15px;margin-bottom:1px;'; });
+    clone.querySelectorAll('.center').forEach(el=>{ el.style.cssText = 'text-align:center;font-size:10px;color:#333;margin-bottom:6px;'; });
+    clone.querySelectorAll('h3').forEach(el=>{ el.style.cssText = 'font-size:11.5px;margin:6px 0 3px;color:#8e0000;'; });
+    clone.querySelectorAll('.contract-row').forEach(el=>{ el.style.cssText = 'display:flex;justify-content:space-between;border-bottom:1px solid #bbb;padding:3px 0;font-size:10.5px;'; });
+    clone.querySelectorAll('.terms').forEach(el=>{ el.style.cssText = 'margin-top:8px;font-size:10px;line-height:1.5;'; });
+    clone.querySelectorAll('.terms li').forEach(el=>{ el.style.cssText = 'font-size:10px;margin-right:14px;'; });
+    clone.querySelectorAll('.sign').forEach(el=>{ el.style.cssText = 'display:flex;justify-content:space-between;margin-top:14px;font-size:10.5px;'; });
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    const canvas = await html2canvas(wrapper, {
+      scale: 2, backgroundColor:'#ffffff', useCORS:true,
+      width:794, height:1123, windowWidth:794, windowHeight:1123
+    });
+
+    document.body.removeChild(wrapper);
+
+    const link = document.createElement('a');
+    link.download = `عقد-${b.id}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){
+    console.error(e);
+    alert('فشل حفظ الصورة. جرّب من متصفح آخر.');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '🖼️ حفظ كصورة';
   }
 });
 
